@@ -1,18 +1,29 @@
 package com.example.weathersensor.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.Instant;
 
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
-@Table(name = "sensor_readings")
+@Table(name = "sensor_readings", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "sensor_tag", "timestamp" })
+})
 public class SensorReading {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String sensorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sensor_tag", referencedColumnName = "tag", nullable = false)
+    private Sensor sensor;
 
     @Column(nullable = false)
     private Double temperature;
@@ -24,35 +35,13 @@ public class SensorReading {
     private Double windSpeed;
 
     @Column(nullable = false)
-    private Instant timestamp;
+    private Instant timestamp = Instant.now();
 
-    // Default constructor required by JPA
-    public SensorReading() {}
-
-    public SensorReading(String sensorId, Double temperature, Double humidity, Double windSpeed, Instant timestamp) {
-        this.sensorId = sensorId;
+    public SensorReading(Sensor sensor, Double temperature, Double humidity, Double windSpeed, Instant timestamp) {
+        this.sensor = sensor;
         this.temperature = temperature;
         this.humidity = humidity;
         this.windSpeed = windSpeed;
         this.timestamp = timestamp;
     }
-
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getSensorId() { return sensorId; }
-    public void setSensorId(String sensorId) { this.sensorId = sensorId; }
-
-    public Double getTemperature() { return temperature; }
-    public void setTemperature(Double temperature) { this.temperature = temperature; }
-
-    public Double getHumidity() { return humidity; }
-    public void setHumidity(Double humidity) { this.humidity = humidity; }
-
-    public Double getWindSpeed() { return windSpeed; }
-    public void setWindSpeed(Double windSpeed) { this.windSpeed = windSpeed; }
-
-    public Instant getTimestamp() { return timestamp; }
-    public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }
 }

@@ -4,19 +4,22 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password: password
+#  security:
+#    enabled: false
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create-drop
-    show-sql: false
+    show-sql: true
     properties:
       hibernate:
-        format_sql: false
+        format_sql: true
 
   h2:
     console:
-      enabled: false
+      enabled: true
+      path: /h2-console
 
 logging:
   level:
