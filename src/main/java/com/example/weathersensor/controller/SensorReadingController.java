@@ -63,26 +63,26 @@ public class SensorReadingController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/average/{sensorId}")
-    @Operation(summary = "Get average metrics for a specific sensor",
-            description = "Calculate average temperature, humidity, and wind speed for a specific sensor in a date range")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Average metrics calculated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid date range or sensor ID")
-    })
-    public ResponseEntity<AverageMetricResponse> getAverageMetricsBySensor(
-            @Parameter(description = "Unique sensor identifier")
-            @PathVariable String sensorId,
-
-            @Parameter(description = "Start date and time (ISO 8601 format with timezone)")
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startTime,
-
-            @Parameter(description = "End date and time (ISO 8601 format with timezone)")
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime endTime) {
-
-        AverageMetricResponse response = service.getAverageMetricsBySensor(sensorId, startTime, endTime);
-        return ResponseEntity.ok(response);
-    }
+//    @GetMapping("/average/{sensorId}")
+//    @Operation(summary = "Get average metrics for a specific sensor",
+//            description = "Calculate average temperature, humidity, and wind speed for a specific sensor in a date range")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Average metrics calculated successfully"),
+//            @ApiResponse(responseCode = "400", description = "Invalid date range or sensor ID")
+//    })
+//    public ResponseEntity<AverageMetricResponse> getAverageMetricsBySensor(
+//            @Parameter(description = "Unique sensor identifier")
+//            @PathVariable String sensorId,
+//
+//            @Parameter(description = "Start date and time (ISO 8601 format with timezone)")
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime startTime,
+//
+//            @Parameter(description = "End date and time (ISO 8601 format with timezone)")
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime endTime) {
+//
+//        AverageMetricResponse response = service.getAverageMetricsBySensor(sensorId, startTime, endTime);
+//        return ResponseEntity.ok(response);
+//    }
 
     @GetMapping
     @Operation(summary = "Get all sensor readings in a date range",
