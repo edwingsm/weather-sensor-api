@@ -12,8 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -35,9 +34,14 @@ public class SensorReadingControllerTest {
     @Test
     public void testRegisterSensorData() throws Exception {
         // Prepare test data
-        OffsetDateTime timestamp = OffsetDateTime.now(ZoneOffset.UTC);
-        SensorReadingRequest request = new SensorReadingRequest("SENSOR_001", Double.valueOf(23.5), Double.valueOf(0), Double.valueOf(0), timestamp);
-        SensorReadingResponse sensorReadingResponse = new SensorReadingResponse(1l, "SENSOR_001", Double.valueOf(23.5), Double.valueOf(0), Double.valueOf(0), timestamp);
+        Instant instant = Instant.now();
+        ZonedDateTime targetTime = instant.atZone(ZoneId.of("Asia/Kolkata"));
+
+        SensorReadingRequest request = new SensorReadingRequest("SENSOR_001", Double.valueOf(23.5),
+                Double.valueOf(0), Double.valueOf(0), instant);
+
+        SensorReadingResponse sensorReadingResponse = new SensorReadingResponse(1l, "SENSOR_001",
+                Double.valueOf(23.5), Double.valueOf(0), Double.valueOf(0), targetTime);
 
 
         when(sensorReadingService.registerReading(any(SensorReadingRequest.class)))
@@ -52,14 +56,4 @@ public class SensorReadingControllerTest {
                 .andExpect(jsonPath("$.temperature").value(Double.valueOf(23.5)));
     }
 
-//    @Test
-//    public void testRegisterSensorDataValidationFailure() throws Exception {
-//        // Test with missing required fields
-//        SensorDataRequest request = new SensorDataRequest();
-//
-//        mockMvc.perform(post("/api/sensor-data")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(request)))
-//                .andExpect(status().isBadRequest());
-//    }
 }

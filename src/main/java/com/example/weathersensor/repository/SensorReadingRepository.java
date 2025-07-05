@@ -56,7 +56,7 @@ public interface SensorReadingRepository extends JpaRepository<SensorReading, Lo
 
     @Query("SELECT new com.example.weathersensor.dto.AverageMetricsDto(AVG(sr.temperature), AVG(sr.humidity), AVG(sr.windSpeed), COUNT(sr)) " +
             "FROM SensorReading sr WHERE sr.timestamp BETWEEN :startTime AND :endTime")
-    Optional<AverageMetricsDto> findAverageMetricsInDateRange2(
+    Optional<AverageMetricsDto> findAverageMetricsInDateRangeV2(
             @Param("startTime") Instant startTime,
             @Param("endTime") Instant endTime);
 

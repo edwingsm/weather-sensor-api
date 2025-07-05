@@ -1,18 +1,18 @@
 package com.example.weathersensor.service;
 
 import com.example.weathersensor.dto.AverageMetricResponse;
+import com.example.weathersensor.dto.AverageMetricsDto;
 import com.example.weathersensor.dto.SensorReadingRequest;
 import com.example.weathersensor.dto.SensorReadingResponse;
 import com.example.weathersensor.entity.Sensor;
 import com.example.weathersensor.entity.SensorReading;
+import com.example.weathersensor.exception.SensorNotFoundException;
 import com.example.weathersensor.repository.SensorReadingRepository;
 import com.example.weathersensor.repository.SensorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,21 +36,22 @@ public class SensorReadingService {
         Optional<Sensor> sensorOpt = sensorRepository.findByTag(request.sensorId());
 
         if (sensorOpt.isEmpty()) {
-            throw new RuntimeException("Sensor not found with ID: " + request.sensorId());
+            throw new SensorNotFoundException("Sensor not found with ID: " + request.sensorId() , SensorNotFoundException.MODE.READING);
         }
-        // Convert OffsetDateTime to UTC Instant for storage
-        Instant utcTimestamp = request.timestamp().toInstant();
 
         SensorReading reading = new SensorReading(
                 sensorOpt.get(),
                 request.temperature(),
                 request.humidity(),
                 request.windSpeed(),
-                utcTimestamp
+                request.timestamp()
         );
 
         SensorReading saved = sensorReadingRepository.save(reading);
+        saved.getSensor().getTimeZone();
 
+        // Convert to a specific time zone
+        ZonedDateTime targetTime = saved.getTimestamp().atZone(ZoneId.of(saved.getSensor().getTimeZone()));
         // Convert back to OffsetDateTime for response
         OffsetDateTime responseTimestamp = saved.getTimestamp().atOffset(ZoneOffset.UTC);
 
@@ -60,64 +61,44 @@ public class SensorReadingService {
                 saved.getTemperature(),
                 saved.getHumidity(),
                 saved.getWindSpeed(),
-                responseTimestamp
+                targetTime
         );
     }
 
     /**
      * Get average metrics for all sensors in a date range
      */
-    public AverageMetricResponse getAverageMetrics(OffsetDateTime startTime, OffsetDateTime endTime) {
-        Instant startInstant = startTime.toInstant();
-        Instant endInstant = endTime.toInstant();
+    public AverageMetricsDto getAverageMetrics(Instant startTime, Instant endTime) {
 
-        Optional<Object> result = sensorReadingRepository.findAverageMetricsInDateRange(startInstant, endInstant);
 
-//        if (result == null || result[0] == null) {
-//            return new AverageMetricResponse(null, null, null, 0L);
-//        }
-//
-//        return new AverageMetricResponse(
-//                (Double) result[0],  // average temperature
-//                (Double) result[1],  // average humidity
-//                (Double) result[2],  // average wind speed
-//                (Long) result[3]     // sample count
-//        );
+        Optional<AverageMetricsDto> result = sensorReadingRepository.findAverageMetricsInDateRangeV2(startTime, endTime);
+        return result.orElseGet(() -> new AverageMetricsDto(null, null, null, 0L));
 
-        return null;
     }
 
     /**
      * Get average metrics for a specific sensor in a date range
      */
-//    public AverageMetricResponse getAverageMetricsBySensor(String sensorId,
-//                                                           OffsetDateTime startTime,
-//                                                           OffsetDateTime endTime) {
-//        Instant startInstant = startTime.toInstant();
-//        Instant endInstant = endTime.toInstant();
-//
-//        Object[] result = sensorReadingRepository.findAverageMetricsBySensorInDateRange(sensorId, startInstant, endInstant);
-//
-//        if (result == null || result[0] == null) {
-//            return new AverageMetricResponse(null, null, null, 0L);
-//        }
-//
-//        return new AverageMetricResponse(
-//                (Double) result[0],  // average temperature
-//                (Double) result[1],  // average humidity
-//                (Double) result[2],  // average wind speed
-//                (Long) result[3]     // sample count
-//        );
-//    }
+    public AverageMetricsDto getAverageMetricsBySensor(String sensorId,
+                                                           Instant startTime,
+                                                           Instant endTime) {
+
+
+        Optional<AverageMetricsDto> result= sensorReadingRepository.findAverageMetricsFiltered(startTime, endTime,
+                null,sensorId,null);
+
+
+
+        return result.orElseGet(() -> new AverageMetricsDto(null, null, null, 0L));
+    }
 
     /**
      * Get all sensor readings within a date range
      */
-    public List<SensorReadingResponse> getReadings(OffsetDateTime startTime, OffsetDateTime endTime) {
-        Instant startInstant = startTime.toInstant();
-        Instant endInstant = endTime.toInstant();
+    public List<SensorReadingResponse> getReadings(Instant startTime, Instant endTime) {
 
-        List<SensorReading> readings = sensorReadingRepository.findByTimestampBetween(startInstant, endInstant);
+
+        List<SensorReading> readings = sensorReadingRepository.findByTimestampBetween(startTime, endTime);
 
         return readings.stream()
                 .map(this::convertToResponse)
@@ -126,14 +107,14 @@ public class SensorReadingService {
 
     private SensorReadingResponse convertToResponse(SensorReading reading) {
         OffsetDateTime timestamp = reading.getTimestamp().atOffset(ZoneOffset.UTC);
-
+        ZonedDateTime targetTime = reading.getTimestamp().atZone(ZoneId.of(reading.getSensor().getTimeZone()));
         return new SensorReadingResponse(
                 reading.getId(),
                 reading.getSensor().getTag(),
                 reading.getTemperature(),
                 reading.getHumidity(),
                 reading.getWindSpeed(),
-                timestamp
+                targetTime
         );
     }
 }

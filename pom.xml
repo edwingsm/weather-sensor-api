@@ -88,6 +88,7 @@
 				<executions>
 					<execution>
 						<id>integration</id>
+						<phase>none</phase> <!-- Prevents automatic execution during build : mvn springdoc-openapi:generate-->
 						<goals>
 							<goal>generate</goal>
 						</goals>
@@ -106,13 +107,15 @@
 				<version>0.8.13</version>
 				<executions>
 					<execution>
+						<id>prepare-agent</id>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
 					</execution>
+					<!-- Generates report after tests -->
 					<execution>
 						<id>report</id>
-						<phase>test</phase>
+						<phase>verify</phase> <!-- Make sure this is "verify" not "test" -->
 						<goals>
 							<goal>report</goal>
 						</goals>

@@ -1,6 +1,8 @@
 package com.example.weathersensor.dto;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
 public record SensorReadingResponse(
         Long id,
@@ -8,5 +10,5 @@ public record SensorReadingResponse(
         Double temperature,
         Double humidity,
         Double windSpeed,
-        OffsetDateTime timestamp
+        ZonedDateTime timestamp
 ) {}

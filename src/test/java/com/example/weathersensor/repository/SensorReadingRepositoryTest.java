@@ -71,17 +71,17 @@ class SensorReadingRepositoryTest {
         Optional<Double> avgTemp2 = repository.findAvgTemperatureByLocationBetween("Berlin",hourAgo.minus(1, ChronoUnit.HOURS),
                 now.plus(1, ChronoUnit.HOURS));
         // When
-        Optional<AverageMetricsDto> result = repository.findAverageMetricsInDateRange2(
+        Optional<AverageMetricsDto> result = repository.findAverageMetricsInDateRangeV2(
                 hourAgo.minus(1, ChronoUnit.HOURS),
                 now.plus(1, ChronoUnit.HOURS)
         );
 
         // Then
         assertThat(result.isPresent()).isTrue();
-        assertThat(result.get().avgTemperature()).isEqualTo(25.0);
-        assertThat(result.get().avgHumidity()).isEqualTo(65.0);
-        assertThat(result.get().avgWindSpeed()).isEqualTo(15.0);
-        assertThat(result.get().count()).isEqualTo(2L);
+        assertThat(result.get().averageTemperature()).isEqualTo(25.0);
+        assertThat(result.get().averageHumidity()).isEqualTo(65.0);
+        assertThat(result.get().averageWindSpeed()).isEqualTo(15.0);
+        assertThat(result.get().readings()).isEqualTo(2L);
     }
 
     @Test
@@ -113,6 +113,6 @@ class SensorReadingRepositoryTest {
 //        assertThat((Double) result[0]).isEqualTo(25.0); // average temperature for SENSOR_1
 //        assertThat((Double) result[1]).isEqualTo(65.0); // average humidity for SENSOR_1
 //        assertThat((Double) result[2]).isEqualTo(15.0); // average wind speed for SENSOR_1
-//        assertThat((Long) result[3]).isEqualTo(2L);     // count for SENSOR_1
+//        assertThat((Long) result[3]).isEqualTo(2L);     // readings for SENSOR_1
     }
 }

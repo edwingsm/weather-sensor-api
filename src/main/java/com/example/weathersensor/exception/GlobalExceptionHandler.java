@@ -65,14 +65,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleSensorNotFound(
             SensorNotFoundException ex, WebRequest request) {
 
+        HttpStatus httpStatus =  ex.getMode().equals(SensorNotFoundException.MODE.SENSOR) ?HttpStatus.NOT_FOUND : HttpStatus.UNPROCESSABLE_ENTITY;
+
         ErrorResponse errorResponse = new ErrorResponse(
                 ex.getMessage(),
-                HttpStatus.NOT_FOUND.value(),
+               httpStatus.value(),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 request.getDescription(false).replace("uri=", "")
         );
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        return ResponseEntity.status(httpStatus).body(errorResponse);
     }
 
     /**
