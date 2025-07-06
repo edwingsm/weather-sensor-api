@@ -1,5 +1,10 @@
 # weather-sensor-api
 
+## Notes
+- Please check ``develop`` branch for API with security implementation
+- `main` branch doesn't have security
+- please check `scripts` folder to test scripts
+
 ## Reuirement Analysis
  Going through the requirment it was noit clear what the weather sensor mean it an outdoor unit or indoor unit
  <br>I made an assusmption it's an outdoor unit which can be instllaed any location
