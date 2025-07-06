@@ -17,8 +17,8 @@ spring:
     console:
       enabled: true
       path: /h2-console
-#  security:
-#    enabled: false
+  security:
+    enabled: false
 
 server:
   port: 8080

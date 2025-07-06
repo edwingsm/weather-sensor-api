@@ -4,23 +4,23 @@ BASE_URL="http://localhost:8080/api/v1"
 HEADER="Content-Type: application/json"
 
 echo "✅ Registering SENSOR_010..."
-curl -i -X POST "$BASE_URL/sensors" \
+curl -i -u user:password -X POST "$BASE_URL/sensors" \
   -H "$HEADER" \
   -d '{"tag":"SENSOR_010", "location":"Berlin", "timeZone":"Europe/Berlin"}'
 
 echo -e "\n\n❌ Registering SENSOR_010 again (should fail with 409)..."
-curl -i -u admin:password -X POST "$BASE_URL/sensors" \
+curl -i -u user:password admin:password -X POST "$BASE_URL/sensors" \
   -H "$HEADER" \
   -d '{"tag":"SENSOR_010", "location":"Berlin", "timeZone":"Europe/Berlin"}'
 
 echo -e "\n\n📋 Listing all sensors..."
-curl -i -X GET "$BASE_URL/sensors"
+curl -i -u user:password -X GET "$BASE_URL/sensors"
 
 echo -e "\n\n📍 Getting sensors in Berlin..."
-curl -i -X GET "$BASE_URL/sensors/location/Berlin"
+curl -i -u user:password -X GET "$BASE_URL/sensors/location/Berlin"
 
 echo -e "\n\n❌ Sending malformed JSON (missing comma)..."
-curl -i -X POST "$BASE_URL/sensors" \
+curl -i -u user:password -X POST "$BASE_URL/sensors" \
   -H "$HEADER" \
   -d '{"tag":"SENSOR_999" "location":"Nowhere", "timeZone":"Europe/Nowhere"}'
 

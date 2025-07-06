@@ -40,10 +40,20 @@ Even though there are test classes for all the classes written main focus was gi
 - Some `JPQL` queries are not ideal without indexing database , might be adding `@Transactional(readOnly=true)` will improve performance on readonly functions
 
 ## What's missing
-- Security ,I try to implement securty in the last . After enabling security APP start behave chaged
+- Security ,I try to implement security in the last . After enabling security APP start behave changed
    - h2 console start to act weired after enabling security
-  - Also unit tests/integration tests are missing security aspect , I tried to implement but failed seems like some test instrumentation issue
+   - Also unit tests/integration tests are missing security aspect , I tried to implement but failed seems like some test instrumentation issue
+   - if you want to acces h2 db ,  think you need disable security 
 
 ## What should I have done different
 - I think there is code duplication which could have been avoided 
 - Enable security Revisit testing
+
+### Generate swagger
+- Run application
+- Execute `` mvn springdoc-openapi:generate``
+
+### Generate Test coverage
+``mvn clean test jacoco:report``
+
+There is a bash script in scripts folder to test APIs
